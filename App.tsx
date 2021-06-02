@@ -1,12 +1,41 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import uuid from 'react-native-uuid';
+import { Header, ListItem, AddItem } from './components';
 
-export default function App() {
+const v4 = () => uuid.v4() as string;
+
+export interface ItemInterface {
+  id: string;
+  text: string;
+}
+
+function App() {
+  const [items, setItems] = React.useState<ItemInterface[]>([
+    { id: v4(), text: 'Milk' },
+    { id: v4(), text: 'Bread' },
+    { id: v4(), text: 'Eggs' },
+    { id: v4(), text: 'Juice' },
+  ]);
+
+  const handleAddItem = (text: string) => {
+    setItems([{ id: v4(), text }, ...items]);
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setItems(items.filter((item) => item.id !== id));
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Header title="Shopping List" />
+      <AddItem onAdd={handleAddItem} />
+      <FlatList
+        data={items}
+        renderItem={({ item }) => (
+          <ListItem item={item} onRemove={handleRemoveItem} />
+        )}
+      />
     </View>
   );
 }
@@ -14,8 +43,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 60,
   },
 });
+
+export default App;
